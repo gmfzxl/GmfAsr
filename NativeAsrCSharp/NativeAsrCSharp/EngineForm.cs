@@ -13,6 +13,9 @@ namespace NativeAsrCSharp
         static int ENGINE_STATE_NOT_INIT = 1000;
         static int ENGINE_STATE_IDLE = 1001;
         static int ENGINE_STATE_ASR = 1002;
+        private int count = 0;
+
+        const string DLL_ADDRESS = @"D:\code\gmfasr\GmfAsr\NativeAsrCSharp\Debug\NativeAsrDll.dll";
 
 
         static int ERROR_READ_RECORD_ERROR = -986;
@@ -21,28 +24,31 @@ namespace NativeAsrCSharp
         [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
         public delegate void eventCallBack(int code, string result, int data);
 
-        [DllImport(@"D:\code\repos\NativeAsrCSharp\Debug\NativeAsrDll.dll")]
-        static extern int initEngine(eventCallBack callBack);
+        [DllImport(DLL_ADDRESS)]
+        static extern int initEngine(string grammerPath, string tagName, eventCallBack callBack);
 
-        [DllImport(@"D:\code\repos\NativeAsrCSharp\Debug\NativeAsrDll.dll")]
+        [DllImport(DLL_ADDRESS)]
         static extern int startAsr();
-        [DllImport(@"D:\code\repos\NativeAsrCSharp\Debug\NativeAsrDll.dll")]
+        [DllImport(DLL_ADDRESS)]
         static extern void cancelAsr();
 
-        [DllImport(@"D:\code\repos\NativeAsrCSharp\Debug\NativeAsrDll.dll")]
-        static extern int insertVocab(string vocab);
-
-        [DllImport(@"D:\code\repos\NativeAsrCSharp\Debug\NativeAsrDll.dll")]
+        [DllImport(DLL_ADDRESS)]
         static extern void saveRecord(int save);
 
-        [DllImport(@"D:\code\repos\NativeAsrCSharp\Debug\NativeAsrDll.dll")]
+        [DllImport(DLL_ADDRESS)]
         static extern IntPtr getVersion();
 
-        [DllImport(@"D:\code\repos\NativeAsrCSharp\Debug\NativeAsrDll.dll")]
+        [DllImport(DLL_ADDRESS)]
         static extern int getEngineState();
 
-        [DllImport(@"D:\code\repos\NativeAsrCSharp\Debug\NativeAsrDll.dll")]
+        [DllImport(DLL_ADDRESS)]
         static extern void setCallBack(eventCallBack callBack);
+
+        [DllImport(DLL_ADDRESS)]
+        static extern int resetGrammer(string grammerPath,string tag);
+
+        [DllImport(DLL_ADDRESS)]
+        static extern int releaseEngine();
         public EngineForm()
         {
             InitializeComponent();
@@ -51,7 +57,7 @@ namespace NativeAsrCSharp
         private void button1_Click(object sender, EventArgs e)
         {
             callBack = new eventCallBack(engineCallBack); ;
-            int ret = initEngine(callBack);
+            int ret = initEngine(@"..\grammar\tv_main.dat", "tv_main", callBack);
             if (ret == 0)
             {
                 IntPtr temp = getVersion();
@@ -145,27 +151,26 @@ namespace NativeAsrCSharp
 
         private void buttonInsert_Click(object sender, EventArgs e)
         {
-            List<string> list = new List<string>();
-            string text = textBoxInsert.Text.ToString();
-            String[] array = text.Split('#');
-            if (array == null || array.Length == 0)
+            int ret;
+            string text;
+            if (count % 2 == 0)
             {
-                MessageBox.Show("请输入有效词表!");
-            }
-            foreach (string str in array)
-            {
-                list.Add(str);
-            }
-            String vocab = "Domain_userdef_commands_slot";
-            string result = getVocabString(vocab, list);
-            int ret = insertVocab(result);
-            if (ret == 0)
-            {
-                MessageBox.Show("插入词表成功!");
+                ret = resetGrammer(@"..\grammar\air_main.dat", @"air_main");
+                text = @"当前命令是打开/关闭空调";
             }
             else
             {
-                MessageBox.Show("插入词表失败!");
+                ret = resetGrammer(@"..\grammar\tv_main.dat", @"tv_main");
+                text = @"当前命令是打开/关闭电视";
+            }
+            if (ret == 0)
+            {
+                count++;
+                MessageBox.Show("切换成功!"+text);
+            }
+            else
+            {
+                MessageBox.Show("切换失败!");
             }
         }
 
@@ -196,5 +201,9 @@ namespace NativeAsrCSharp
             saveRecord(save);
         }
 
+        private void button1_Click_1(object sender, EventArgs e)
+        {
+            releaseEngine();
+        }
     }
 }

@@ -31,11 +31,11 @@
             this.buttonInit = new System.Windows.Forms.Button();
             this.listBoxResult = new System.Windows.Forms.ListBox();
             this.buttonInsert = new System.Windows.Forms.Button();
-            this.textBoxInsert = new System.Windows.Forms.TextBox();
             this.buttonStart = new System.Windows.Forms.Button();
             this.buttonCancel = new System.Windows.Forms.Button();
             this.checkBoxSaveRecord = new System.Windows.Forms.CheckBox();
             this.labelState = new System.Windows.Forms.Label();
+            this.button1 = new System.Windows.Forms.Button();
             this.SuspendLayout();
             // 
             // buttonInit
@@ -52,9 +52,9 @@
             // 
             this.listBoxResult.FormattingEnabled = true;
             this.listBoxResult.ItemHeight = 12;
-            this.listBoxResult.Location = new System.Drawing.Point(1, 199);
+            this.listBoxResult.Location = new System.Drawing.Point(12, 129);
             this.listBoxResult.Name = "listBoxResult";
-            this.listBoxResult.Size = new System.Drawing.Size(915, 196);
+            this.listBoxResult.Size = new System.Drawing.Size(892, 256);
             this.listBoxResult.TabIndex = 2;
             this.listBoxResult.SelectedIndexChanged += new System.EventHandler(this.listBoxResult_SelectedIndexChanged);
             // 
@@ -64,21 +64,13 @@
             this.buttonInsert.Name = "buttonInsert";
             this.buttonInsert.Size = new System.Drawing.Size(75, 23);
             this.buttonInsert.TabIndex = 3;
-            this.buttonInsert.Text = "插入词表 用#号分割";
+            this.buttonInsert.Text = "更换模型";
             this.buttonInsert.UseVisualStyleBackColor = true;
             this.buttonInsert.Click += new System.EventHandler(this.buttonInsert_Click);
             // 
-            // textBoxInsert
-            // 
-            this.textBoxInsert.Location = new System.Drawing.Point(12, 70);
-            this.textBoxInsert.Name = "textBoxInsert";
-            this.textBoxInsert.Size = new System.Drawing.Size(342, 21);
-            this.textBoxInsert.TabIndex = 4;
-            this.textBoxInsert.Text = "打开蓝牙#关闭电视";
-            // 
             // buttonStart
             // 
-            this.buttonStart.Location = new System.Drawing.Point(12, 97);
+            this.buttonStart.Location = new System.Drawing.Point(12, 70);
             this.buttonStart.Name = "buttonStart";
             this.buttonStart.Size = new System.Drawing.Size(75, 23);
             this.buttonStart.TabIndex = 5;
@@ -88,7 +80,7 @@
             // 
             // buttonCancel
             // 
-            this.buttonCancel.Location = new System.Drawing.Point(12, 126);
+            this.buttonCancel.Location = new System.Drawing.Point(12, 100);
             this.buttonCancel.Name = "buttonCancel";
             this.buttonCancel.Size = new System.Drawing.Size(75, 23);
             this.buttonCancel.TabIndex = 6;
@@ -99,7 +91,7 @@
             // checkBoxSaveRecord
             // 
             this.checkBoxSaveRecord.AutoSize = true;
-            this.checkBoxSaveRecord.Location = new System.Drawing.Point(120, 104);
+            this.checkBoxSaveRecord.Location = new System.Drawing.Point(93, 74);
             this.checkBoxSaveRecord.Name = "checkBoxSaveRecord";
             this.checkBoxSaveRecord.Size = new System.Drawing.Size(72, 16);
             this.checkBoxSaveRecord.TabIndex = 7;
@@ -116,16 +108,26 @@
             this.labelState.TabIndex = 8;
             this.labelState.Text = "未初始化";
             // 
+            // button1
+            // 
+            this.button1.Location = new System.Drawing.Point(218, 17);
+            this.button1.Name = "button1";
+            this.button1.Size = new System.Drawing.Size(75, 23);
+            this.button1.TabIndex = 9;
+            this.button1.Text = "释放引擎";
+            this.button1.UseVisualStyleBackColor = true;
+            this.button1.Click += new System.EventHandler(this.button1_Click_1);
+            // 
             // EngineForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(916, 395);
+            this.Controls.Add(this.button1);
             this.Controls.Add(this.labelState);
             this.Controls.Add(this.checkBoxSaveRecord);
             this.Controls.Add(this.buttonCancel);
             this.Controls.Add(this.buttonStart);
-            this.Controls.Add(this.textBoxInsert);
             this.Controls.Add(this.buttonInsert);
             this.Controls.Add(this.listBoxResult);
             this.Controls.Add(this.buttonInit);
@@ -143,11 +145,11 @@
         private System.Windows.Forms.Button buttonInit;
         private System.Windows.Forms.ListBox listBoxResult;
         private System.Windows.Forms.Button buttonInsert;
-        private System.Windows.Forms.TextBox textBoxInsert;
         private System.Windows.Forms.Button buttonStart;
         private System.Windows.Forms.Button buttonCancel;
         private System.Windows.Forms.CheckBox checkBoxSaveRecord;
         private System.Windows.Forms.Label labelState;
+        private System.Windows.Forms.Button button1;
     }
 }
 

@@ -3,8 +3,9 @@ EXPORTS
      initEngine @1  
      startAsr @2  
 	 cancelAsr @3
-	 insertVocab @4
-	 getVersion @5
-	 saveRecord @6
-	 getEngineState @7
-	 setCallBack @8
+	 getVersion @4
+	 saveRecord @5
+	 getEngineState @6
+	 setCallBack @7
+	 resetGrammer @8
+	 releaseEngine @9

@@ -44,7 +44,7 @@ typedef int(__cdecl *loadCompiledJsgf)(long handler, const char* jsgf_path);
 typedef int(__cdecl *stop)();
 typedef char *(__cdecl *version)();
 typedef char* (__cdecl *getResult)();
-typedef int(__cdecl *release)();
+typedef void(__cdecl *release)();
 typedef int(__cdecl *setOption)(int, int);
 typedef long(__cdecl *initUserDataCompiler)(const char* modeldir);
 typedef int(__cdecl *partialCompileUserData)(long handle, const char* in_partial_data_path, const char* jsgf, const char* vocab, const char* out_dir, const char* out_partial_data_path);
@@ -67,6 +67,7 @@ typedef struct {
 class NativeEngine
 {
 private:
+	char * tagName;
 	FILE * fp;
 	int frameSize;
 	long handle;
@@ -81,7 +82,8 @@ private:
 	std::string getJsgfString(const char * modelTag);
 public:
 	NativeEngine();
-	int initEngine(eventCallBack callBack);
+	int initEngine(char * grammerPath, char * tagName, eventCallBack callBack);
+	int resetGrammer(char * grammerPath, char * tagName);
 	int getEngineState();
 	void setEngineState(int state);
 	int startAsr();
@@ -94,6 +96,7 @@ public:
 	void callBack(int event, const char * result, int data);
 	int insertVocab(const char * vocab);
 	void cancelAsr();
+	void releaseEngine();
 	~NativeEngine();
 };
 

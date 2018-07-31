@@ -2,9 +2,9 @@
 #include "NativeEngineHolder.h"
 
 static NativeEngine nativeEngine;
-int __stdcall initEngine(eventCallBack callBack)
+int __stdcall initEngine(char * grammerPath, char * tagName, eventCallBack callBack)
 {
-	return nativeEngine.initEngine(callBack);
+	return nativeEngine.initEngine(grammerPath, tagName, callBack);
 }
 int __stdcall startAsr()
 {
@@ -14,10 +14,6 @@ void __stdcall cancelAsr()
 {
 	nativeEngine.cancelAsr();
 	return;
-}
-int __stdcall insertVocab(const char * vocab)
-{
-	return nativeEngine.insertVocab(vocab);
 }
 const char * __stdcall getVersion()
 {
@@ -34,4 +30,12 @@ int __stdcall getEngineState()
 void __stdcall setCallBack(eventCallBack callBack)
 {
 	nativeEngine.setCallBack(callBack);
+}
+void __stdcall resetGrammer(char * grammerPath, char * tagName)
+{
+	nativeEngine.resetGrammer(grammerPath, tagName);
+}
+void __stdcall releaseEngine()
+{
+	nativeEngine.releaseEngine();
 }

@@ -36,3 +36,5 @@ void OutputDebugStringEx(const wchar_t *strOutputString, ...);
 void OutputDebugStringEx(const char *strOutputString, ...);
 char * getTime();
 int Convert(void *sstr, int scp, void **dstr, int dcp);
+void copyStr(char ** dest,char * src);
+void freeStr(char * str);

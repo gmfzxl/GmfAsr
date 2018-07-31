@@ -200,3 +200,21 @@ int Convert(void *sstr, int scp, void **dstr, int dcp)
 
 	return cch;
 }
+
+void copyStr(char ** dest, char * src)
+{
+	if (!dest) return;
+	int len = strlen(src);
+	char * destTemp = (char *)malloc(len + 1);
+	memmove(destTemp, src, len + 1);
+	*dest = destTemp;
+}
+
+void freeStr(char ** str)
+{
+	if (*str)
+	{
+		free(*str);
+		*str = NULL;
+	}
+}

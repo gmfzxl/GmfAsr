@@ -43,23 +43,40 @@ void NativeEngine::setCallBack(eventCallBack callBack)
 	this->dllCallBack = callBack;
 }
 
-int NativeEngine::initEngine(eventCallBack callBack)
+int NativeEngine::resetGrammer(char * grammerPath, char * tagName)
+{
+	if (!initSuccess) {
+		OutputDebugStringEx("not init\n");
+		callBack(EVENT_ENGINE_ERROR, "engine not init", ERROR_ENGINE_NOT_INIT);
+		return ERROR_ENGINE_NOT_INIT;
+	}
+	cancelAsr();
+	int ret = pEngine->pReset(grammerPath, "command");
+	if (ret == 0)
+	{
+		copyStr(&this->tagName, tagName);
+		return 0;
+	}
+	return -1;
+}
+
+int NativeEngine::initEngine(char * grammerPath, char * tagName, eventCallBack callBack)
 {
 	this->dllCallBack = callBack;
 	if (initSuccess) {
 		OutputDebugStringEx("double init\n");
-		callBack(EVENT_ENGINE_ERROR, "double init", NULL);
+		callBack(EVENT_ENGINE_ERROR, "double init", ERROR_DOUBLE_INIT);
 		return ERROR_DOUBLE_INIT;
 	}
 	if (!pEngine) {
 		OutputDebugStringEx("malloc fail\n");
-		callBack(EVENT_ENGINE_ERROR, "malloc fail", NULL);
+		callBack(EVENT_ENGINE_ERROR, "malloc fail", ERROR_MALLOC_FAIL);
 		return ERROR_MALLOC_FAIL;
 	}
 	pEngine->hModule = LoadLibraryEx("..\\dll\\libengine.dll", NULL, LOAD_WITH_ALTERED_SEARCH_PATH);
 	if (!pEngine->hModule) {
 		OutputDebugStringEx("load dll fail\n");
-		callBack(EVENT_ENGINE_ERROR, "load dll fail", NULL);
+		callBack(EVENT_ENGINE_ERROR, "load dll fail", ERROR_LOAD_DLL_FAIL);
 		return ERROR_LOAD_DLL_FAIL;
 	}
 	pEngine->pInit = (init)GetProcAddress(pEngine->hModule, "init");
@@ -71,8 +88,8 @@ int NativeEngine::initEngine(eventCallBack callBack)
 	pEngine->pStop = (stop)GetProcAddress(pEngine->hModule, "stop");
 	pEngine->pGetResult = (getResult)GetProcAddress(pEngine->hModule, "getResult");
 	pEngine->pInitUserDataCompiler = (initUserDataCompiler)GetProcAddress(pEngine->hModule, "initUserDataCompiler");
-	pEngine->pRelease = (release)GetProcAddress(pEngine->hModule, "release");
 	pEngine->pVersion = (version)GetProcAddress(pEngine->hModule, "version");
+	pEngine->pRelease = (release)GetProcAddress(pEngine->hModule, "release");
 	pEngine->pPartialCompileUserData = (partialCompileUserData)GetProcAddress(pEngine->hModule, "partialCompileUserData");
 	if (!pEngine->pInit || !pEngine->pSetOption || !pEngine->pStart ||
 		!pEngine->pRecognize || !pEngine->pStop || !pEngine->pGetResult ||
@@ -80,31 +97,25 @@ int NativeEngine::initEngine(eventCallBack callBack)
 		!pEngine->pInitUserDataCompiler || !pEngine->pPartialCompileUserData ||
 		!pEngine->pVersion) {
 		OutputDebugStringEx("get api fail\n");
-		callBack(EVENT_ENGINE_ERROR, "get api fail", NULL);
+		callBack(EVENT_ENGINE_ERROR, "get api fail", ERROR_GET_API_FAIL);
 		return ERROR_GET_API_FAIL;
 	}
-	int ret = pEngine->pInit("..\\module", "..\\grammar\\tv_main.dat", 79);
+	int ret = pEngine->pInit("..\\module", grammerPath, 79);
 	if (ret != 0)
 	{
 		OutputDebugStringEx("init fail\n");
-		callBack(EVENT_ENGINE_ERROR, "init fail", NULL);
+		callBack(EVENT_ENGINE_ERROR, "init fail", ERROR_INIT_FAIL);
 		return ERROR_INIT_FAIL;
 	}
+	copyStr(&this->tagName, tagName);
 	handle = pEngine->pInitUserDataCompiler("..\\module");
 	if (handle <= 0)
 	{
 		OutputDebugStringEx("initUserDataCompiler fail %ld\n", handle);
-		callBack(EVENT_ENGINE_ERROR, "initUserDataCompiler fail", NULL);
+		callBack(EVENT_ENGINE_ERROR, "initUserDataCompiler fail", ERROR_INIT_COMPILE_FAIL);
 		return ERROR_INIT_COMPILE_FAIL;
 	}
 	OutputDebugStringEx("initUserDataCompiler %ld\n", handle);
-	ret = pEngine->pLoadCompiledJsgf(handle, "..\\grammar\\asr_main.dat");
-	OutputDebugStringEx("load jsgf result %d\n", ret);
-	if (ret != 0)
-	{
-		callBack(EVENT_ENGINE_ERROR, "load jsgf result", NULL);
-		return ERROR_LOAD_JSGF_FAIL;
-	}
 	initSuccess = TRUE;
 	DWORD threadId = GetCurrentThreadId();
 	OutputDebugStringEx("init success id %d\n", threadId);
@@ -136,13 +147,13 @@ int NativeEngine::startAsr()
 	if (!initSuccess)
 	{
 		OutputDebugStringEx("engine not init\n");
-		callBack(EVENT_ENGINE_ERROR, "engine not init", 0);
+		callBack(EVENT_ENGINE_ERROR, "engine not init", ERROR_ENGINE_NOT_INIT);
 		return ERROR_ENGINE_NOT_INIT;
 	}
 	if (state == ENGINE_STATE_ASR)
 	{
 		OutputDebugStringEx("engine already start\n");
-		callBack(EVENT_ENGINE_ERROR, "engine already start", 0);
+		callBack(EVENT_ENGINE_ERROR, "engine already start", ERROR_ALREADY_START);
 		return ERROR_ALREADY_START;
 	}
 	int result = recordThread.start();
@@ -150,14 +161,14 @@ int NativeEngine::startAsr()
 	if (!result)
 	{
 		OutputDebugStringEx("open record fail\n");
-		callBack(EVENT_ENGINE_ERROR, "open record fail", 0);
+		callBack(EVENT_ENGINE_ERROR, "open record fail", ERROR_OPEN_RECORD_FAIL);
 		return ERROR_OPEN_RECORD_FAIL;
 	}
 	OutputDebugStringEx("pEngine->pStart\n");
-	int ret = pEngine->pStart("asr_main", 53);
+	int ret = pEngine->pStart(this->tagName, 53);
 	if (ret != 0) {
 		OutputDebugStringEx("start fail!\n");
-		callBack(EVENT_ENGINE_ERROR, "start fail", 0);
+		callBack(EVENT_ENGINE_ERROR, "start fail", ERROR_START_ASR_FAIL);
 		return ERROR_START_ASR_FAIL;
 	}
 	isRun = TRUE;
@@ -215,7 +226,7 @@ int NativeEngine::insertVocab(const char * vocab)
 	if (!initSuccess)
 	{
 		OutputDebugStringEx("engine not init\n");
-		callBack(EVENT_ENGINE_ERROR, "engine not init", 0);
+		callBack(EVENT_ENGINE_ERROR, "engine not init", ERROR_ENGINE_NOT_INIT);
 		return ERROR_ENGINE_NOT_INIT;
 	}
 	cancelAsr();
@@ -227,7 +238,7 @@ int NativeEngine::insertVocab(const char * vocab)
 	if (ret != 0)
 	{
 		OutputDebugStringEx("compile fail %d\n", ret);
-		callBack(EVENT_ENGINE_ERROR, "ompile fail", 0);
+		callBack(EVENT_ENGINE_ERROR, "ompile fail", ERROR_COMPILE_JSGF_FAIL);
 		return ERROR_COMPILE_JSGF_FAIL;
 	}
 	OutputDebugStringEx("compile success\n");
@@ -235,7 +246,7 @@ int NativeEngine::insertVocab(const char * vocab)
 	if (ret != 0)
 	{
 		OutputDebugStringEx("reset fail %d\n", ret);
-		callBack(EVENT_ENGINE_ERROR, "reset fail", 0);
+		callBack(EVENT_ENGINE_ERROR, "reset fail", ERROR_RESET_JSGF_FAIL);
 		return ERROR_RESET_JSGF_FAIL;
 	}
 	OutputDebugStringEx("reset success\n");
@@ -300,6 +311,18 @@ void* NativeEngine::enterAsr2(void * p2)
 	return NULL;
 }
 
+void NativeEngine::releaseEngine()
+{
+	if (initSuccess)
+	{
+		cancelAsr();
+		pEngine->pRelease();
+		initSuccess = FALSE;
+		setEngineState(ENGINE_STATE_NOT_INIT);
+	}
+	return;
+}
+
 string NativeEngine::getJsgfString(const char * modelTag) {
 	string tag = modelTag;
 	string jsgf = "#JSGF V1.0 utf-8 cn;\n grammar " + tag + ";\n"
@@ -314,6 +337,7 @@ NativeEngine::~NativeEngine()
 	recordThread.setCallBack(NULL, NULL);
 	free(pEngine);
 	cancelAsr();
+	free(&this->tagName);
 	if (fp)
 	{
 		fclose(fp);
