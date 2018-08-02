@@ -6,6 +6,7 @@
 
 NativeEngine::NativeEngine()
 {
+	nSamplesPerSec = 16000;
 	pEngine = (Engine *)malloc(sizeof(Engine));
 	initSuccess = FALSE;
 	frameSize = 1200;
@@ -178,15 +179,21 @@ int NativeEngine::startAsr()
 		OutputDebugStringEx("mkdir %d\n", code);
 		char * time = getTime();
 		const char  * flolder = "Record\\";
-		char  pcm[5] = ".pcm";
+		char  pcm[5] = ".wav";
 		int len = strlen(time) + strlen(flolder);
-		char * fileName = (char *)malloc(sizeof(char) * len + sizeof(pcm));
+		fileName = (char *)malloc(sizeof(char) * len + sizeof(pcm));
 		memmove(fileName, flolder, strlen(flolder) * sizeof(char));
 		memmove(fileName + strlen(flolder), time, strlen(time) * sizeof(char));
 		memmove(fileName + len, pcm, sizeof(pcm));
 		free(time);
 		OutputDebugStringEx(fileName);
+		closeFile();
 		fp = fopen(fileName, "wb");
+		if (fp)
+		{
+			char wavHeader[WAV_HEADER_LEN];
+			fwrite(wavHeader, WAV_HEADER_LEN, 1, fp);
+		}
 	}
 	OutputDebugStringEx("enterAsr thread\n");
 	pThread = (pthread_t *)malloc(sizeof(pthread_t));
@@ -285,11 +292,7 @@ void NativeEngine::enterAsr()
 			break;
 		}
 	}
-	if (fp)
-	{
-		fclose(fp);
-		fp = NULL;
-	}
+	closeFile();
 	if (isRun && read < 0)
 	{
 		callBack(EVENT_ENGINE_ERROR, NULL, ERROR_READ_RECORD_ERROR);
@@ -304,6 +307,16 @@ void NativeEngine::recordCallBack(void * p2)
 	p->cancelAsr();
 }
 
+void NativeEngine::closeFile()
+{
+	if (fp)
+	{
+		fclose(fp);
+		fp = NULL;
+		addWaveHeader(fileName, nSamplesPerSec, 16, 1);
+		saveFree((void **)&fileName);
+	}
+}
 void* NativeEngine::enterAsr2(void * p2)
 {
 	NativeEngine *p = (NativeEngine *)p2;
@@ -337,10 +350,6 @@ NativeEngine::~NativeEngine()
 	recordThread.setCallBack(NULL, NULL);
 	free(pEngine);
 	cancelAsr();
-	free(&this->tagName);
-	if (fp)
-	{
-		fclose(fp);
-		fp = NULL;
-	}
+	saveFree((void **)(&this->tagName));
+	closeFile();
 }

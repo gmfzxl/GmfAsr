@@ -37,3 +37,13 @@ D:\code\gmfasr\GmfAsr\NativeAsrCSharp\NativeAsrCSharp\obj\Debug\NativeAsrCSharp.
 D:\code\gmfasr\GmfAsr\NativeAsrCSharp\NativeAsrCSharp\obj\Debug\NativeAsrCSharp.exe
 D:\code\gmfasr\GmfAsr\NativeAsrCSharp\NativeAsrCSharp\obj\Debug\NativeAsrCSharp.pdb
 D:\code\gmfasr\GmfAsr\NativeAsrCSharp\NativeAsrCSharp\obj\Debug\NativeAsrCSharp.csprojAssemblyReference.cache
+D:\code\nativeasr\GmfAsr\NativeAsrCSharp\NativeAsrCSharp\bin\Debug\NativeAsrCSharp.exe.config
+D:\code\nativeasr\GmfAsr\NativeAsrCSharp\NativeAsrCSharp\bin\Debug\NativeAsrCSharp.exe
+D:\code\nativeasr\GmfAsr\NativeAsrCSharp\NativeAsrCSharp\bin\Debug\NativeAsrCSharp.pdb
+D:\code\nativeasr\GmfAsr\NativeAsrCSharp\NativeAsrCSharp\obj\Debug\NativeAsrCSharp.csprojAssemblyReference.cache
+D:\code\nativeasr\GmfAsr\NativeAsrCSharp\NativeAsrCSharp\obj\Debug\NativeAsrCSharp.EngineForm.resources
+D:\code\nativeasr\GmfAsr\NativeAsrCSharp\NativeAsrCSharp\obj\Debug\NativeAsrCSharp.Properties.Resources.resources
+D:\code\nativeasr\GmfAsr\NativeAsrCSharp\NativeAsrCSharp\obj\Debug\NativeAsrCSharp.csproj.GenerateResource.cache
+D:\code\nativeasr\GmfAsr\NativeAsrCSharp\NativeAsrCSharp\obj\Debug\NativeAsrCSharp.csproj.CoreCompileInputs.cache
+D:\code\nativeasr\GmfAsr\NativeAsrCSharp\NativeAsrCSharp\obj\Debug\NativeAsrCSharp.exe
+D:\code\nativeasr\GmfAsr\NativeAsrCSharp\NativeAsrCSharp\obj\Debug\NativeAsrCSharp.pdb

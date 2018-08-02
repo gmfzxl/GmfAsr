@@ -210,11 +210,51 @@ void copyStr(char ** dest, char * src)
 	*dest = destTemp;
 }
 
-void freeStr(char ** str)
+void saveFree(void ** str)
 {
 	if (*str)
 	{
 		free(*str);
 		*str = NULL;
+	}
+}
+
+void addWaveHeader(char * filePath, int samplesPerSec, int bitsPerSample, int channle)
+{
+	FILE * fp = fopen(filePath, "rb+");
+	long size = 0;
+	if (fp)
+	{
+		int writeSize = 0;
+		fseek(fp, 0, SEEK_END);
+		size = ftell(fp);
+		if (size > 0)
+		{
+			WaveHeader waveHeader;
+			if (sizeof(waveHeader) != WAV_HEADER_LEN)
+			{
+				return;
+			}
+			memmove(waveHeader.riff, "RIFF", 4);
+			memmove(waveHeader.wave, "WAVE", 4);
+			memmove(waveHeader.fmt, "fmt ", 4);
+			memmove(waveHeader.data, "data", 4);
+			waveHeader.totalLen = size - 8;
+			waveHeader.dwFMTLen = 16;
+			waveHeader.fmtPcm = 1;
+			waveHeader.channels = channle;
+			waveHeader.fmtSamplehz = samplesPerSec;
+			waveHeader.fmtBytepsec = samplesPerSec * channle*bitsPerSample / 8;
+			waveHeader.fmtBlockAlign = channle * bitsPerSample / 8;
+			waveHeader.fmtBitPerSample = bitsPerSample;
+			waveHeader.dwDATALen = size - 44;
+			fseek(fp, 0, SEEK_SET);
+			writeSize = fwrite(&waveHeader, WAV_HEADER_LEN, 1, fp);
+		}
+		fclose(fp);
+		if (writeSize <= 0)
+		{
+			remove(filePath);
+		}
 	}
 }

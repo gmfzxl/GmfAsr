@@ -71,8 +71,10 @@ private:
 	FILE * fp;
 	int frameSize;
 	long handle;
+	int nSamplesPerSec;
 	int save;
 	int state;
+	char * fileName;
 	eventCallBack dllCallBack;
 	RecordThread recordThread;
 	int initSuccess;
@@ -97,6 +99,7 @@ public:
 	int insertVocab(const char * vocab);
 	void cancelAsr();
 	void releaseEngine();
+	void closeFile();
 	~NativeEngine();
 };
 
