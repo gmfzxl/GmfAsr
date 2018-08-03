@@ -52,6 +52,9 @@ namespace NativeAsrCSharp
 
         [DllImport(DLL_ADDRESS)]
         static extern int setSamplesPerSec(int sample);
+
+        [DllImport(DLL_ADDRESS)]
+        static extern int startTest(string testPath);
         public EngineForm()
         {
             InitializeComponent();
@@ -231,6 +234,11 @@ namespace NativeAsrCSharp
             {
                 checkBox8K.Checked = false;
             }
+        }
+
+        private void buttonTest_Click(object sender, EventArgs e)
+        {
+            startTest(@"Record\");
         }
     }
 }

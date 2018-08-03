@@ -13,3 +13,4 @@ extern "C" __declspec(dllexport) int __stdcall getEngineState();
 extern "C" __declspec(dllexport) void __stdcall setCallBack(eventCallBack callBack);
 extern "C" __declspec(dllexport) void __stdcall releaseEngine();
 extern "C" __declspec(dllexport) int __stdcall setSamplesPerSec(int samplesPerSec);
+extern "C" __declspec(dllexport) int __stdcall startTest(char * testPath);

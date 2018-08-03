@@ -22,12 +22,15 @@
 #define ERROR_START_ASR_FAIL -988
 #define ERROR_ALREADY_START -987
 #define ERROR_READ_RECORD_ERROR -986
+#define ERROR_WAVE_PATH_NULL -985
 
 #define EVENT_START 1000
 
 #define EVENT_ENGINE_SUCCESS 2001
-#define EVENT_ENGINE_ERROR 2001
+#define EVENT_ENGINE_ERROR 2002
 #define EVENT_ASR_RESULT 2003
+#define EVENT_TEST_RESULT 2004
+#define EVENT_TEST_END 2005
 
 #define ENGINE_STATE_CHANGE 999
 #define ENGINE_STATE_NOT_INIT 1000
@@ -77,6 +80,7 @@ private:
 	int save;
 	int state;
 	char * fileName;
+	char * testPath;
 	eventCallBack dllCallBack;
 	RecordThread recordThread;
 	int initSuccess;
@@ -92,11 +96,14 @@ public:
 	int getEngineState();
 	void setEngineState(int state);
 	int startAsr();
+	int startTest(char * wavPath);
 	void setCallBack(eventCallBack dllCallBack);
 	void saveRecord(int save);
 	const char * getVersion();
 	void enterAsr();
 	static void* enterAsr2(void * p);
+	void enterTest();
+	static void* enterTest2(void * p);
 	static void recordCallBack(void * p);
 	void callBack(int event, const char * result, int data);
 	int insertVocab(const char * vocab);

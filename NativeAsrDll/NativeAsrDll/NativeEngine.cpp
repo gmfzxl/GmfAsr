@@ -3,6 +3,7 @@
 #include "NativeEngine.h"
 #include "Utils.h"
 #include <direct.h>
+#include <io.h>
 
 NativeEngine::NativeEngine()
 {
@@ -159,13 +160,6 @@ int NativeEngine::startAsr()
 		callBack(EVENT_ENGINE_ERROR, "open record fail", ERROR_OPEN_RECORD_FAIL);
 		return ERROR_OPEN_RECORD_FAIL;
 	}
-	OutputDebugStringEx("pEngine->pStart\n");
-	int ret = pEngine->pStart(this->tagName, 53);
-	if (ret != 0) {
-		OutputDebugStringEx("start fail!\n");
-		callBack(EVENT_ENGINE_ERROR, "start fail", ERROR_START_ASR_FAIL);
-		return ERROR_START_ASR_FAIL;
-	}
 	isRun = TRUE;
 	if (save)
 	{
@@ -198,6 +192,44 @@ int NativeEngine::startAsr()
 	setEngineState(ENGINE_STATE_ASR);
 	return 0;
 }
+
+int NativeEngine::startTest(char * wavPath)
+{
+	OutputDebugStringEx("startTest %d\n", initSuccess);
+	if (!initSuccess)
+	{
+		OutputDebugStringEx("engine not init\n");
+		callBack(EVENT_ENGINE_ERROR, "engine not init", ERROR_ENGINE_NOT_INIT);
+		return ERROR_ENGINE_NOT_INIT;
+	}
+	if (!wavPath)
+	{
+		OutputDebugStringEx("wav path null\n");
+		callBack(EVENT_ENGINE_ERROR, "engine not init", ERROR_WAVE_PATH_NULL);
+		return ERROR_WAVE_PATH_NULL;
+	}
+	saveFree((void **)&testPath);
+	int len = strlen(wavPath);
+	testPath = (char *)malloc(strlen(wavPath) + 1);
+	memmove(testPath, wavPath, len + 1);
+	if (state == ENGINE_STATE_ASR)
+	{
+		OutputDebugStringEx("engine already start\n");
+		callBack(EVENT_ENGINE_ERROR, "engine already start", ERROR_ALREADY_START);
+		return ERROR_ALREADY_START;
+	}
+	pEngine->pSetOption(OPTION_SET_SAMPLES, nSamplesPerSec / 1000);
+	isRun = TRUE;
+	OutputDebugStringEx("enterTest thread\n");
+	pThread = (pthread_t *)malloc(sizeof(pthread_t));
+	pthread_create(pThread, NULL, enterTest2, (void *)this);
+	DWORD threadId = GetCurrentThreadId();
+	OutputDebugStringEx("start asr success %d\n", threadId);
+	callBack(EVENT_ENGINE_SUCCESS, "start asr success", 0);
+	setEngineState(ENGINE_STATE_ASR);
+	return 0;
+}
+
 void NativeEngine::cancelAsr()
 {
 	OutputDebugStringEx("engine cancel is Run %d\n", isRun);
@@ -211,11 +243,6 @@ void NativeEngine::cancelAsr()
 			free(pThread);
 			pThread = NULL;
 		}
-		OutputDebugStringEx("engine stop\n");
-		pEngine->pStop();
-		setEngineState(ENGINE_STATE_IDLE);
-		OutputDebugStringEx("engine cancel\n");
-		callBack(EVENT_ENGINE_SUCCESS, "engine cancel", 0);
 	}
 	callBack(EVENT_ENGINE_SUCCESS, "cancel asr success", 0);
 }
@@ -255,9 +282,96 @@ int NativeEngine::insertVocab(const char * vocab)
 	return SUCCESS;
 }
 
+void NativeEngine::enterTest()
+{
+	int len = strlen(testPath);
+	const char * wav = "*.wav";
+	char * path = (char *)malloc(len + strlen(wav) + 1);
+	memmove(path, testPath, len);
+	memmove(path + len, wav, strlen(wav) + 1);
+	long handler;
+	_finddata_t fileDir;
+	char * tempData = (char *)malloc(frameSize);
+	if ((handler = _findfirst(path, &fileDir)) == -1L)
+	{
+		OutputDebugStringEx("folder is empty\n");
+	}
+	else
+	{
+		do {
+			OutputDebugStringEx(fileDir.name);
+			char * filePath = (char *)malloc(len + strlen(fileDir.name) + 1);
+			memmove(filePath, testPath, len);
+			memmove(filePath + len, fileDir.name, strlen(fileDir.name) + 1);
+			OutputDebugStringEx(filePath);
+			FILE * file = fopen(filePath, "rb");
+			if (file)
+			{
+				fseek(file, WAV_HEADER_LEN, SEEK_SET);
+				OutputDebugStringEx("pEngine->pStart\n");
+				int ret = pEngine->pStart(this->tagName, 53);
+				if (ret != 0) {
+					OutputDebugStringEx("start fail!\n");
+					callBack(EVENT_ENGINE_ERROR, "start fail", ERROR_START_ASR_FAIL);
+					return;
+				}
+				while (isRun)
+				{
+					int read = fread((void *)tempData, sizeof(char), frameSize, file);
+					if (read > 0)
+					{
+						int code = pEngine->pRecognize((char *)tempData, read);
+						if (code == 2) {
+							char * cache = (char *)pEngine->pGetResult();
+							char *pDest;
+							Utf8ToGb2312(cache, &pDest);
+							DWORD threadId = GetCurrentThreadId();
+							OutputDebugStringEx("get result %d\n", threadId);
+							OutputDebugStringEx(pDest);
+							const char * split = "@@@";
+							char * result = (char *)malloc(strlen(fileDir.name) + strlen(split) + strlen(pDest) + 1);
+							memmove(result, fileDir.name, strlen(fileDir.name));
+							memmove(result + strlen(fileDir.name), split, strlen(split));
+							memmove(result + strlen(fileDir.name) + strlen(split), pDest, strlen(pDest) + 1);
+							callBack(EVENT_TEST_RESULT, result, 0);
+							saveFree((void **)&pDest);
+							saveFree((void **)&result);
+						}
+					}
+					else
+					{
+						break;
+					}
+				}
+				fclose(file);
+				pEngine->pStop();
+			}
+			saveFree((void **)&filePath);
+		} while (_findnext(handler, &fileDir) == 0 && isRun);
+		_findclose(handler);
+	}
+	saveFree((void **)&testPath);
+	saveFree((void **)&path);
+	saveFree((void **)&tempData);
+	if (isRun)
+	{
+		callBack(EVENT_TEST_END, "test end", 0);
+	}
+	setEngineState(ENGINE_STATE_IDLE);
+	OutputDebugStringEx("engine stop\n");
+	callBack(EVENT_ENGINE_SUCCESS, "engine stop", 0);
+}
+
 void NativeEngine::enterAsr()
 {
 	int read = 0;
+	OutputDebugStringEx("pEngine->pStart\n");
+	int ret = pEngine->pStart(this->tagName, 53);
+	if (ret != 0) {
+		OutputDebugStringEx("start fail!\n");
+		callBack(EVENT_ENGINE_ERROR, "start fail", ERROR_START_ASR_FAIL);
+		return;
+	}
 	while (isRun)
 	{
 		char * pData = (char *)malloc(frameSize * sizeof(char));
@@ -287,11 +401,14 @@ void NativeEngine::enterAsr()
 		}
 	}
 	closeFile();
+	pEngine->pStop();
 	if (isRun && read < 0)
 	{
 		callBack(EVENT_ENGINE_ERROR, NULL, ERROR_READ_RECORD_ERROR);
 	}
-	OutputDebugStringEx("enterAsr cancel\n");
+	setEngineState(ENGINE_STATE_IDLE);
+	OutputDebugStringEx("engine stop\n");
+	callBack(EVENT_ENGINE_SUCCESS, "engine stop", 0);
 }
 
 void NativeEngine::recordCallBack(void * p2)
@@ -318,6 +435,13 @@ void* NativeEngine::enterAsr2(void * p2)
 	return NULL;
 }
 
+void* NativeEngine::enterTest2(void * p2)
+{
+	NativeEngine *p = (NativeEngine *)p2;
+	p->enterTest();
+	return NULL;
+}
+
 void NativeEngine::releaseEngine()
 {
 	if (initSuccess)
@@ -326,6 +450,7 @@ void NativeEngine::releaseEngine()
 		pEngine->pRelease();
 		initSuccess = FALSE;
 		setEngineState(ENGINE_STATE_NOT_INIT);
+		callBack(EVENT_ENGINE_SUCCESS, "engine release", 0);
 	}
 	return;
 }
@@ -351,6 +476,7 @@ string NativeEngine::getJsgfString(const char * modelTag) {
 
 NativeEngine::~NativeEngine()
 {
+	saveFree((void **)&testPath);
 	recordThread.setCallBack(NULL, NULL);
 	free(pEngine);
 	cancelAsr();

@@ -10,3 +10,4 @@ EXPORTS
 	 resetGrammer @8
 	 releaseEngine @9
 	 setSamplesPerSec @10
+	 startTest @11

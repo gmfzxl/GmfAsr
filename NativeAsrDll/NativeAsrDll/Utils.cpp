@@ -156,7 +156,6 @@ int Convert(void *sstr, int scp, void **dstr, int dcp)
 			}
 			break;
 		}
-
 		switch (act)
 		{
 		case _wc2mb:
@@ -182,7 +181,6 @@ int Convert(void *sstr, int scp, void **dstr, int dcp)
 			LCMapString(lcid, LCMAP_SIMPLIFIED_CHINESE, (char *)src, -1, (char *)dest, cch);
 			break;
 		}
-
 		if (src && (src != sstr))
 		{
 			free(src);

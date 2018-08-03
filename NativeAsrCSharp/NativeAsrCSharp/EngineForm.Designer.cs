@@ -38,6 +38,7 @@
             this.button1 = new System.Windows.Forms.Button();
             this.checkBox8K = new System.Windows.Forms.CheckBox();
             this.checkBox16K = new System.Windows.Forms.CheckBox();
+            this.buttonTest = new System.Windows.Forms.Button();
             this.SuspendLayout();
             // 
             // buttonInit
@@ -112,7 +113,7 @@
             // 
             // button1
             // 
-            this.button1.Location = new System.Drawing.Point(218, 17);
+            this.button1.Location = new System.Drawing.Point(327, 17);
             this.button1.Name = "button1";
             this.button1.Size = new System.Drawing.Size(75, 23);
             this.button1.TabIndex = 9;
@@ -144,11 +145,22 @@
             this.checkBox16K.UseVisualStyleBackColor = true;
             this.checkBox16K.CheckedChanged += new System.EventHandler(this.checkBox16K_CheckedChanged);
             // 
+            // buttonTest
+            // 
+            this.buttonTest.Location = new System.Drawing.Point(156, 12);
+            this.buttonTest.Name = "buttonTest";
+            this.buttonTest.Size = new System.Drawing.Size(124, 23);
+            this.buttonTest.TabIndex = 12;
+            this.buttonTest.Text = "测试音频文件";
+            this.buttonTest.UseVisualStyleBackColor = true;
+            this.buttonTest.Click += new System.EventHandler(this.buttonTest_Click);
+            // 
             // EngineForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(916, 395);
+            this.Controls.Add(this.buttonTest);
             this.Controls.Add(this.checkBox16K);
             this.Controls.Add(this.checkBox8K);
             this.Controls.Add(this.button1);
@@ -180,6 +192,7 @@
         private System.Windows.Forms.Button button1;
         private System.Windows.Forms.CheckBox checkBox8K;
         private System.Windows.Forms.CheckBox checkBox16K;
+        private System.Windows.Forms.Button buttonTest;
     }
 }
 

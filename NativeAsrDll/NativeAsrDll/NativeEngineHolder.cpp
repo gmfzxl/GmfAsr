@@ -10,6 +10,10 @@ int __stdcall startAsr()
 {
 	return nativeEngine.startAsr();
 }
+int __stdcall startTest(char * testPath)
+{
+	return nativeEngine.startTest(testPath);
+}
 void __stdcall cancelAsr()
 {
 	nativeEngine.cancelAsr();
@@ -41,5 +45,5 @@ void __stdcall releaseEngine()
 }
 int __stdcall setSamplesPerSec(int samplesPerSec)
 {
-	 return nativeEngine.setSamplesPerSec(samplesPerSec);
+	return nativeEngine.setSamplesPerSec(samplesPerSec);
 }
