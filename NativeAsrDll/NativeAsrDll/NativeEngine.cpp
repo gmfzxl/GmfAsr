@@ -109,14 +109,6 @@ int NativeEngine::initEngine(char * grammerPath, char * tagName, eventCallBack c
 		return ERROR_INIT_FAIL;
 	}
 	copyStr(&this->tagName, tagName);
-	handle = pEngine->pInitUserDataCompiler("..\\module");
-	if (handle <= 0)
-	{
-		OutputDebugStringEx("initUserDataCompiler fail %ld\n", handle);
-		callBack(EVENT_ENGINE_ERROR, "initUserDataCompiler fail", ERROR_INIT_COMPILE_FAIL);
-		return ERROR_INIT_COMPILE_FAIL;
-	}
-	OutputDebugStringEx("initUserDataCompiler %ld\n", handle);
 	initSuccess = TRUE;
 	DWORD threadId = GetCurrentThreadId();
 	OutputDebugStringEx("init success id %d\n", threadId);
@@ -157,6 +149,8 @@ int NativeEngine::startAsr()
 		callBack(EVENT_ENGINE_ERROR, "engine already start", ERROR_ALREADY_START);
 		return ERROR_ALREADY_START;
 	}
+	recordThread.setSamplesPerSec(nSamplesPerSec);
+	pEngine->pSetOption(OPTION_SET_SAMPLES, nSamplesPerSec / 1000);
 	int result = recordThread.start();
 	OutputDebugStringEx("recordThread.start\n");
 	if (!result)
@@ -313,7 +307,7 @@ void NativeEngine::closeFile()
 	{
 		fclose(fp);
 		fp = NULL;
-		addWaveHeader(fileName, nSamplesPerSec, 16, 1);
+		recordThread.addWaveHeader(fileName, recordThread.getSamplesPerSec());
 		saveFree((void **)&fileName);
 	}
 }
@@ -334,6 +328,16 @@ void NativeEngine::releaseEngine()
 		setEngineState(ENGINE_STATE_NOT_INIT);
 	}
 	return;
+}
+
+int NativeEngine::setSamplesPerSec(int samplesPerSec)
+{
+	if (samplesPerSec != 16000 && samplesPerSec != 8000)
+	{
+		return -1;
+	}
+	this->nSamplesPerSec = samplesPerSec;
+	return 0;
 }
 
 string NativeEngine::getJsgfString(const char * modelTag) {

@@ -34,6 +34,8 @@
 #define ENGINE_STATE_IDLE 1001
 #define ENGINE_STATE_ASR 1002
 
+#define OPTION_SET_SAMPLES 600
+
 typedef  void(*eventCallBack)(int, const char *, int);
 
 typedef int(__cdecl *init)(const char* path_of_am, const char* path_of_grammar, short port);
@@ -85,6 +87,7 @@ private:
 public:
 	NativeEngine();
 	int initEngine(char * grammerPath, char * tagName, eventCallBack callBack);
+	int setSamplesPerSec(int samplesPerSec);
 	int resetGrammer(char * grammerPath, char * tagName);
 	int getEngineState();
 	void setEngineState(int state);

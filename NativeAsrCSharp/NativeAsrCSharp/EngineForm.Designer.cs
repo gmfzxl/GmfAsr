@@ -36,6 +36,8 @@
             this.checkBoxSaveRecord = new System.Windows.Forms.CheckBox();
             this.labelState = new System.Windows.Forms.Label();
             this.button1 = new System.Windows.Forms.Button();
+            this.checkBox8K = new System.Windows.Forms.CheckBox();
+            this.checkBox16K = new System.Windows.Forms.CheckBox();
             this.SuspendLayout();
             // 
             // buttonInit
@@ -118,11 +120,37 @@
             this.button1.UseVisualStyleBackColor = true;
             this.button1.Click += new System.EventHandler(this.button1_Click_1);
             // 
+            // checkBox8K
+            // 
+            this.checkBox8K.AutoSize = true;
+            this.checkBox8K.Location = new System.Drawing.Point(195, 76);
+            this.checkBox8K.Name = "checkBox8K";
+            this.checkBox8K.Size = new System.Drawing.Size(36, 16);
+            this.checkBox8K.TabIndex = 10;
+            this.checkBox8K.Text = "8k";
+            this.checkBox8K.UseVisualStyleBackColor = true;
+            this.checkBox8K.CheckedChanged += new System.EventHandler(this.checkBox8K_CheckedChanged);
+            // 
+            // checkBox16K
+            // 
+            this.checkBox16K.AutoSize = true;
+            this.checkBox16K.Checked = true;
+            this.checkBox16K.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.checkBox16K.Location = new System.Drawing.Point(251, 77);
+            this.checkBox16K.Name = "checkBox16K";
+            this.checkBox16K.Size = new System.Drawing.Size(42, 16);
+            this.checkBox16K.TabIndex = 11;
+            this.checkBox16K.Text = "16k";
+            this.checkBox16K.UseVisualStyleBackColor = true;
+            this.checkBox16K.CheckedChanged += new System.EventHandler(this.checkBox16K_CheckedChanged);
+            // 
             // EngineForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(916, 395);
+            this.Controls.Add(this.checkBox16K);
+            this.Controls.Add(this.checkBox8K);
             this.Controls.Add(this.button1);
             this.Controls.Add(this.labelState);
             this.Controls.Add(this.checkBoxSaveRecord);
@@ -150,6 +178,8 @@
         private System.Windows.Forms.CheckBox checkBoxSaveRecord;
         private System.Windows.Forms.Label labelState;
         private System.Windows.Forms.Button button1;
+        private System.Windows.Forms.CheckBox checkBox8K;
+        private System.Windows.Forms.CheckBox checkBox16K;
     }
 }
 

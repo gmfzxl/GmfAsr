@@ -12,7 +12,7 @@ RecordThread::RecordThread()
 	readSize = recordBufferSize / 2;
 	recordBuffer = (char *)malloc(recordBufferSize);
 	int size = sizeof(tempBuffer) / sizeof(char *);
-	tempBufferSize = nSamplesPerSec * 16 * 1 / 8 / 10;
+	tempBufferSize = nSamplesPerSec * BITS_PER_SAMPLE * CHANNLEL / 8 / 20;
 	for (int i = 0; i < size; i++)
 	{
 		tempBuffer[i] = (char *)malloc(tempBufferSize);
@@ -24,6 +24,17 @@ void RecordThread::setCallBack(recordClosedCallBack cb, void *pCall)
 	this->callBack = cb;
 	this->pCall = pCall;
 }
+
+void RecordThread::setSamplesPerSec(int nSamplesPerSec)
+{
+	this->nSamplesPerSec = nSamplesPerSec;
+}
+
+int RecordThread::getSamplesPerSec()
+{
+	return nSamplesPerSec;
+}
+
 int RecordThread::start()
 {
 	cancel();
@@ -171,6 +182,45 @@ void RecordThread::recovery()
 	readSize = recordBufferSize / 2;
 }
 
+void RecordThread::addWaveHeader(char * filePath, int samplesPerSec)
+{
+	FILE * fp = fopen(filePath, "rb+");
+	long size = 0;
+	if (fp)
+	{
+		int writeSize = 0;
+		fseek(fp, 0, SEEK_END);
+		size = ftell(fp);
+		if (size > 0)
+		{
+			WaveHeader waveHeader;
+			if (sizeof(waveHeader) != WAV_HEADER_LEN)
+			{
+				return;
+			}
+			memmove(waveHeader.riff, "RIFF", 4);
+			memmove(waveHeader.wave, "WAVE", 4);
+			memmove(waveHeader.fmt, "fmt ", 4);
+			memmove(waveHeader.data, "data", 4);
+			waveHeader.totalLen = size - 8;
+			waveHeader.dwFMTLen = 16;
+			waveHeader.fmtPcm = 1;
+			waveHeader.channels = CHANNLEL;
+			waveHeader.fmtSamplehz = samplesPerSec;
+			waveHeader.fmtBytepsec = samplesPerSec * CHANNLEL*BITS_PER_SAMPLE / 8;
+			waveHeader.fmtBlockAlign = CHANNLEL * BITS_PER_SAMPLE / 8;
+			waveHeader.fmtBitPerSample = BITS_PER_SAMPLE;
+			waveHeader.dwDATALen = size - 44;
+			fseek(fp, 0, SEEK_SET);
+			writeSize = fwrite(&waveHeader, WAV_HEADER_LEN, 1, fp);
+		}
+		fclose(fp);
+		if (writeSize <= 0)
+		{
+			remove(filePath);
+		}
+	}
+}
 
 RecordThread::~RecordThread()
 {
@@ -181,3 +231,4 @@ RecordThread::~RecordThread()
 		free(tempBuffer[i]);
 	}
 }
+

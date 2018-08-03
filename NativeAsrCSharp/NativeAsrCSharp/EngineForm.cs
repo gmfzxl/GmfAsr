@@ -15,7 +15,7 @@ namespace NativeAsrCSharp
         static int ENGINE_STATE_ASR = 1002;
         private int count = 0;
 
-        const string DLL_ADDRESS = @"D:\code\nativeasr\GmfAsr\NativeAsrCSharp\Debug\NativeAsrDll.dll";
+        const string DLL_ADDRESS = @"D:\code\gmfasr\GmfAsr\NativeAsrCSharp\Debug\NativeAsrDll.dll";
 
 
         static int ERROR_READ_RECORD_ERROR = -986;
@@ -45,10 +45,13 @@ namespace NativeAsrCSharp
         static extern void setCallBack(eventCallBack callBack);
 
         [DllImport(DLL_ADDRESS)]
-        static extern int resetGrammer(string grammerPath,string tag);
+        static extern int resetGrammer(string grammerPath, string tag);
 
         [DllImport(DLL_ADDRESS)]
         static extern int releaseEngine();
+
+        [DllImport(DLL_ADDRESS)]
+        static extern int setSamplesPerSec(int sample);
         public EngineForm()
         {
             InitializeComponent();
@@ -166,7 +169,7 @@ namespace NativeAsrCSharp
             if (ret == 0)
             {
                 count++;
-                MessageBox.Show("切换成功!"+text);
+                MessageBox.Show("切换成功!" + text);
             }
             else
             {
@@ -176,6 +179,14 @@ namespace NativeAsrCSharp
 
         private void buttonStart_Click(object sender, EventArgs e)
         {
+            if (checkBox8K.Checked)
+            {
+                setSamplesPerSec(8000);
+            }
+            else
+            {
+                setSamplesPerSec(16000);
+            }
             if (startAsr() == 0)
             {
                 MessageBox.Show("开始识别!");
@@ -204,6 +215,22 @@ namespace NativeAsrCSharp
         private void button1_Click_1(object sender, EventArgs e)
         {
             releaseEngine();
+        }
+
+        private void checkBox8K_CheckedChanged(object sender, EventArgs e)
+        {
+            if (checkBox8K.Checked)
+            {
+                checkBox16K.Checked = false;
+            }
+        }
+
+        private void checkBox16K_CheckedChanged(object sender, EventArgs e)
+        {
+            if (checkBox16K.Checked)
+            {
+                checkBox8K.Checked = false;
+            }
         }
     }
 }

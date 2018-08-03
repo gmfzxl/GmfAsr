@@ -39,3 +39,7 @@ void __stdcall releaseEngine()
 {
 	nativeEngine.releaseEngine();
 }
+int __stdcall setSamplesPerSec(int samplesPerSec)
+{
+	 return nativeEngine.setSamplesPerSec(samplesPerSec);
+}
