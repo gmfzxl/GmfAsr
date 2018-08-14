@@ -15,7 +15,7 @@ namespace NativeAsrCSharp
         static int ENGINE_STATE_ASR = 1002;
         private int count = 0;
 
-        const string DLL_ADDRESS = @"D:\code\gmfasr\GmfAsr\NativeAsrCSharp\Debug\NativeAsrDll.dll";
+        const string DLL_ADDRESS = @"NativeAsrDll.dll";
 
 
         static int ERROR_READ_RECORD_ERROR = -986;

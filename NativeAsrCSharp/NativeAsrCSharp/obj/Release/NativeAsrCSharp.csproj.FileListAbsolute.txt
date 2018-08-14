@@ -17,3 +17,12 @@ D:\code\repos\NativeAsrCSharp\NativeAsrCSharp\obj\Release\NativeAsrCSharp.csproj
 D:\code\repos\NativeAsrCSharp\NativeAsrCSharp\obj\Release\NativeAsrCSharp.csproj.CoreCompileInputs.cache
 D:\code\repos\NativeAsrCSharp\NativeAsrCSharp\obj\Release\NativeAsrCSharp.exe
 D:\code\repos\NativeAsrCSharp\NativeAsrCSharp\obj\Release\NativeAsrCSharp.pdb
+D:\code\gmfasr\GmfAsr\NativeAsrCSharp\NativeAsrCSharp\bin\Release\NativeAsrCSharp.exe.config
+D:\code\gmfasr\GmfAsr\NativeAsrCSharp\NativeAsrCSharp\bin\Release\NativeAsrCSharp.exe
+D:\code\gmfasr\GmfAsr\NativeAsrCSharp\NativeAsrCSharp\bin\Release\NativeAsrCSharp.pdb
+D:\code\gmfasr\GmfAsr\NativeAsrCSharp\NativeAsrCSharp\obj\Release\NativeAsrCSharp.EngineForm.resources
+D:\code\gmfasr\GmfAsr\NativeAsrCSharp\NativeAsrCSharp\obj\Release\NativeAsrCSharp.Properties.Resources.resources
+D:\code\gmfasr\GmfAsr\NativeAsrCSharp\NativeAsrCSharp\obj\Release\NativeAsrCSharp.csproj.GenerateResource.cache
+D:\code\gmfasr\GmfAsr\NativeAsrCSharp\NativeAsrCSharp\obj\Release\NativeAsrCSharp.csproj.CoreCompileInputs.cache
+D:\code\gmfasr\GmfAsr\NativeAsrCSharp\NativeAsrCSharp\obj\Release\NativeAsrCSharp.exe
+D:\code\gmfasr\GmfAsr\NativeAsrCSharp\NativeAsrCSharp\obj\Release\NativeAsrCSharp.pdb
