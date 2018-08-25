@@ -161,6 +161,7 @@ int NativeEngine::startAsr()
 		return ERROR_OPEN_RECORD_FAIL;
 	}
 	isRun = TRUE;
+	soundMix.reset();
 	if (save)
 	{
 		int code = _mkdir("Record");
