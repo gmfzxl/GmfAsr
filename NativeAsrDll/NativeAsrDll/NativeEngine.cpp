@@ -376,6 +376,10 @@ void NativeEngine::enterAsr()
 	{
 		char * pData = (char *)malloc(frameSize * sizeof(char));
 		read = recordThread.read(pData, frameSize);
+		if (addNoise)
+		{
+			soundMix.process(pData, read, this->ratio);
+		}
 		if (read > 0)
 		{
 			if (fp)
@@ -465,6 +469,33 @@ int NativeEngine::setSamplesPerSec(int samplesPerSec)
 	return 0;
 }
 
+int NativeEngine::setNoiseData(int addNoise, char * file, float ratio)
+{
+	this->addNoise = addNoise;
+	this->ratio = ratio;
+	if (this->addNoise)
+	{
+		copyStr(&this->noiseDataFile, file);
+		FILE * fp = fopen(this->noiseDataFile, "rb");
+		if (!fp)
+		{
+			this->addNoise = 0;
+			return ERROR_NOISE_FILE_NULL;
+		}
+		fclose(fp);
+		if (this->ratio == 0)
+		{
+			this->addNoise = 0;
+			return ERROR_NOISE_RATIO;
+		}
+		return soundMix.init(file);
+	}
+	else
+	{
+		return SUCCESS;
+	}
+}
+
 string NativeEngine::getJsgfString(const char * modelTag) {
 	string tag = modelTag;
 	string jsgf = "#JSGF V1.0 utf-8 cn;\n grammar " + tag + ";\n"
@@ -476,7 +507,9 @@ string NativeEngine::getJsgfString(const char * modelTag) {
 
 NativeEngine::~NativeEngine()
 {
+	soundMix.release();
 	saveFree((void **)&testPath);
+	saveFree((void **)&noiseDataFile);
 	recordThread.setCallBack(NULL, NULL);
 	free(pEngine);
 	cancelAsr();

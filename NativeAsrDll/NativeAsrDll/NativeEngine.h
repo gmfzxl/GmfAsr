@@ -3,6 +3,7 @@
 #include "stdafx.h"
 #include "RecordThread.h" 
 #include "pthread.h"
+#include "SoundMix.h"
 #pragma comment(lib, "pthreadVC2.lib")  
 
 #define SUCCESS 0
@@ -23,6 +24,8 @@
 #define ERROR_ALREADY_START -987
 #define ERROR_READ_RECORD_ERROR -986
 #define ERROR_WAVE_PATH_NULL -985
+#define ERROR_NOISE_FILE_NULL -984
+#define ERROR_NOISE_RATIO -983
 
 #define EVENT_START 1000
 
@@ -87,11 +90,16 @@ private:
 	Engine * pEngine;
 	pthread_t * pThread;
 	volatile int isRun;
+	SoundMix soundMix;
+	int addNoise;
+	float ratio;
+	char * noiseDataFile;
 	std::string getJsgfString(const char * modelTag);
 public:
 	NativeEngine();
 	int initEngine(char * grammerPath, char * tagName, eventCallBack callBack);
 	int setSamplesPerSec(int samplesPerSec);
+	int setNoiseData(int addNoise, char * file, float ratio);
 	int resetGrammer(char * grammerPath, char * tagName);
 	int getEngineState();
 	void setEngineState(int state);

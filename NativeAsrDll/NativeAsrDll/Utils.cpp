@@ -202,6 +202,7 @@ int Convert(void *sstr, int scp, void **dstr, int dcp)
 void copyStr(char ** dest, char * src)
 {
 	if (!dest) return;
+	if (!src) return;
 	int len = strlen(src);
 	char * destTemp = (char *)malloc(len + 1);
 	memmove(destTemp, src, len + 1);

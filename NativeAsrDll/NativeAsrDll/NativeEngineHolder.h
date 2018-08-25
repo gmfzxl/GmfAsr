@@ -14,3 +14,4 @@ extern "C" __declspec(dllexport) void __stdcall setCallBack(eventCallBack callBa
 extern "C" __declspec(dllexport) void __stdcall releaseEngine();
 extern "C" __declspec(dllexport) int __stdcall setSamplesPerSec(int samplesPerSec);
 extern "C" __declspec(dllexport) int __stdcall startTest(char * testPath);
+extern "C" __declspec(dllexport) int __stdcall setNoiseData(int addNoise, char * file, float ratio);

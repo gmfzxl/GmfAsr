@@ -47,3 +47,7 @@ int __stdcall setSamplesPerSec(int samplesPerSec)
 {
 	return nativeEngine.setSamplesPerSec(samplesPerSec);
 }
+int __stdcall setNoiseData(int addNoise, char * file, float ratio)
+{
+	return nativeEngine.setNoiseData(addNoise, file, ratio);
+}

@@ -39,6 +39,9 @@
             this.checkBox8K = new System.Windows.Forms.CheckBox();
             this.checkBox16K = new System.Windows.Forms.CheckBox();
             this.buttonTest = new System.Windows.Forms.Button();
+            this.checkBoxNoise = new System.Windows.Forms.CheckBox();
+            this.textNoise = new System.Windows.Forms.TextBox();
+            this.label1 = new System.Windows.Forms.Label();
             this.SuspendLayout();
             // 
             // buttonInit
@@ -155,11 +158,42 @@
             this.buttonTest.UseVisualStyleBackColor = true;
             this.buttonTest.Click += new System.EventHandler(this.buttonTest_Click);
             // 
+            // checkBoxNoise
+            // 
+            this.checkBoxNoise.AutoSize = true;
+            this.checkBoxNoise.Location = new System.Drawing.Point(327, 76);
+            this.checkBoxNoise.Name = "checkBoxNoise";
+            this.checkBoxNoise.Size = new System.Drawing.Size(72, 16);
+            this.checkBoxNoise.TabIndex = 13;
+            this.checkBoxNoise.Text = "是否加噪";
+            this.checkBoxNoise.UseVisualStyleBackColor = true;
+            // 
+            // textNoise
+            // 
+            this.textNoise.Location = new System.Drawing.Point(488, 72);
+            this.textNoise.Name = "textNoise";
+            this.textNoise.Size = new System.Drawing.Size(100, 21);
+            this.textNoise.TabIndex = 14;
+            this.textNoise.Text = "1.0";
+            this.textNoise.TextChanged += new System.EventHandler(this.textNoise_TextChanged);
+            // 
+            // label1
+            // 
+            this.label1.AutoSize = true;
+            this.label1.Location = new System.Drawing.Point(428, 79);
+            this.label1.Name = "label1";
+            this.label1.Size = new System.Drawing.Size(53, 12);
+            this.label1.TabIndex = 15;
+            this.label1.Text = "加噪系数";
+            // 
             // EngineForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(916, 395);
+            this.Controls.Add(this.label1);
+            this.Controls.Add(this.textNoise);
+            this.Controls.Add(this.checkBoxNoise);
             this.Controls.Add(this.buttonTest);
             this.Controls.Add(this.checkBox16K);
             this.Controls.Add(this.checkBox8K);
@@ -193,6 +227,9 @@
         private System.Windows.Forms.CheckBox checkBox8K;
         private System.Windows.Forms.CheckBox checkBox16K;
         private System.Windows.Forms.Button buttonTest;
+        private System.Windows.Forms.CheckBox checkBoxNoise;
+        private System.Windows.Forms.TextBox textNoise;
+        private System.Windows.Forms.Label label1;
     }
 }
 

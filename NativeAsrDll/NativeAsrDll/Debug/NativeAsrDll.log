@@ -4,6 +4,8 @@
   NativeEngine.cpp
   NativeEngineHolder.cpp
   RecordThread.cpp
+  SoundMix.cpp
+d:\code\gmfasr\gmfasr\nativeasrdll\nativeasrdll\soundmix.cpp(80): warning C4244: “=”: 从“float”转换到“int”，可能丢失数据
   Utils.cpp
   正在生成代码...
 d:\code\gmfasr\gmfasr\nativeasrdll\nativeasrdll\nativeengine.cpp(30): warning C4717: “NativeEngine::getEngineState”: 如递归所有控件路径，函数将导致运行时堆栈溢出

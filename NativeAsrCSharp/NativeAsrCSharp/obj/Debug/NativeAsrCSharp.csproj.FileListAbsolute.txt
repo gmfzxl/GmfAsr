@@ -46,4 +46,3 @@ D:\code\nativeasr\GmfAsr\NativeAsrCSharp\NativeAsrCSharp\obj\Debug\NativeAsrCSha
 D:\code\nativeasr\GmfAsr\NativeAsrCSharp\NativeAsrCSharp\obj\Debug\NativeAsrCSharp.csproj.CoreCompileInputs.cache
 D:\code\nativeasr\GmfAsr\NativeAsrCSharp\NativeAsrCSharp\obj\Debug\NativeAsrCSharp.exe
 D:\code\nativeasr\GmfAsr\NativeAsrCSharp\NativeAsrCSharp\obj\Debug\NativeAsrCSharp.pdb
-D:\code\gmfasr\GmfAsr\NativeAsrCSharp\NativeAsrCSharp\obj\Debug\NativeAsrCSharp.csprojAssemblyReference.cache

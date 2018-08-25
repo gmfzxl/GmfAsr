@@ -15,7 +15,7 @@ namespace NativeAsrCSharp
         static int ENGINE_STATE_ASR = 1002;
         private int count = 0;
 
-        const string DLL_ADDRESS = @"NativeAsrDll.dll";
+        const string DLL_ADDRESS = @"D:\code\gmfasr\GmfAsr\NativeAsrCSharp\Debug\NativeAsrDll.dll";
 
 
         static int ERROR_READ_RECORD_ERROR = -986;
@@ -55,6 +55,10 @@ namespace NativeAsrCSharp
 
         [DllImport(DLL_ADDRESS)]
         static extern int startTest(string testPath);
+
+        [DllImport(DLL_ADDRESS)]
+        static extern int setNoiseData(int addNoise, string noisePath, float ratio);
+
         public EngineForm()
         {
             InitializeComponent();
@@ -182,21 +186,40 @@ namespace NativeAsrCSharp
 
         private void buttonStart_Click(object sender, EventArgs e)
         {
+            string noiseFile;
             if (checkBox8K.Checked)
             {
+                noiseFile = "noise8k.wav";
                 setSamplesPerSec(8000);
             }
             else
             {
+                noiseFile = "noise16k.wav";
                 setSamplesPerSec(16000);
             }
-            if (startAsr() == 0)
+            try
             {
-                MessageBox.Show("开始识别!");
+                float ration = float.Parse(textNoise.Text);
+                if (checkBoxNoise.Checked)
+                {
+                    setNoiseData(1, noiseFile, ration);
+                }
+                else
+                {
+                    setNoiseData(0, null, ration);
+                }
+                if (startAsr() == 0)
+                {
+                    MessageBox.Show("开始识别!");
+                }
+                else
+                {
+                    MessageBox.Show("开启识别失败!");
+                }
             }
-            else
+            catch
             {
-                MessageBox.Show("开启识别失败!");
+                MessageBox.Show("加噪要是浮点数!");
             }
         }
 
@@ -239,6 +262,11 @@ namespace NativeAsrCSharp
         private void buttonTest_Click(object sender, EventArgs e)
         {
             startTest(@"Record\");
+        }
+
+        private void textNoise_TextChanged(object sender, EventArgs e)
+        {
+
         }
     }
 }
