@@ -12,3 +12,4 @@ EXPORTS
 	 setSamplesPerSec @10
 	 startTest @11
 	 setNoiseData @12
+	 stopAsr @13

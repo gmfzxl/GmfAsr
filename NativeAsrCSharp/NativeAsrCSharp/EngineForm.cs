@@ -33,6 +33,9 @@ namespace NativeAsrCSharp
         static extern void cancelAsr();
 
         [DllImport(DLL_ADDRESS)]
+        static extern void stopAsr();
+
+        [DllImport(DLL_ADDRESS)]
         static extern void saveRecord(int save);
 
         [DllImport(DLL_ADDRESS)]
@@ -267,6 +270,11 @@ namespace NativeAsrCSharp
         private void textNoise_TextChanged(object sender, EventArgs e)
         {
 
+        }
+
+        private void buttonStop_Click(object sender, EventArgs e)
+        {
+            stopAsr();
         }
     }
 }

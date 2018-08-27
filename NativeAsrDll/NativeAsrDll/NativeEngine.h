@@ -116,6 +116,7 @@ public:
 	void callBack(int event, const char * result, int data);
 	int insertVocab(const char * vocab);
 	void cancelAsr();
+	void stopAsr();
 	void releaseEngine();
 	void closeFile();
 	~NativeEngine();

@@ -10,7 +10,7 @@ NativeEngine::NativeEngine()
 	nSamplesPerSec = 16000;
 	pEngine = (Engine *)malloc(sizeof(Engine));
 	initSuccess = FALSE;
-	frameSize = 1200;
+	frameSize = 320;
 	dllCallBack = NULL;
 	setEngineState(ENGINE_STATE_NOT_INIT);
 	recordThread.setCallBack(recordCallBack, this);
@@ -26,7 +26,7 @@ void NativeEngine::callBack(int event, const char * result, int data)
 
 int NativeEngine::getEngineState()
 {
-	return getEngineState();
+	return state;
 }
 
 void NativeEngine::setEngineState(int state)
@@ -248,6 +248,23 @@ void NativeEngine::cancelAsr()
 	callBack(EVENT_ENGINE_SUCCESS, "cancel asr success", 0);
 }
 
+void NativeEngine::stopAsr()
+{
+	OutputDebugStringEx("engine stop is Run %d\n", isRun);
+	if (isRun)
+	{
+		recordThread.cancel();
+		if (pThread)
+		{
+			pthread_join(*pThread, NULL);
+			free(pThread);
+			pThread = NULL;
+		}
+		isRun = FALSE;
+	}
+	callBack(EVENT_ENGINE_SUCCESS, "cancel stop success", 0);
+}
+
 int NativeEngine::insertVocab(const char * vocab)
 {
 	OutputDebugStringEx("insertVocab %d\n", initSuccess);
@@ -373,6 +390,7 @@ void NativeEngine::enterAsr()
 		callBack(EVENT_ENGINE_ERROR, "start fail", ERROR_START_ASR_FAIL);
 		return;
 	}
+	soundMix.reset();
 	while (isRun)
 	{
 		char * pData = (char *)malloc(frameSize * sizeof(char));
@@ -400,8 +418,9 @@ void NativeEngine::enterAsr()
 			}
 		}
 		free(pData);
-		if (read < 0)
+		if (read < frameSize)
 		{
+			OutputDebugStringEx("read size %d\n", read);
 			break;
 		}
 	}

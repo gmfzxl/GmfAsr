@@ -51,3 +51,7 @@ int __stdcall setNoiseData(int addNoise, char * file, float ratio)
 {
 	return nativeEngine.setNoiseData(addNoise, file, ratio);
 }
+void __stdcall stopAsr()
+{
+	nativeEngine.stopAsr();
+}

@@ -5,14 +5,12 @@
 RecordThread::RecordThread()
 {
 	isRun = FALSE;
-	isCancel = TRUE;
 	nSamplesPerSec = 16000;
 	size = 0;
 	recordBufferSize = 1024 * 1000;
-	readSize = recordBufferSize / 2;
 	recordBuffer = (char *)malloc(recordBufferSize);
 	int size = sizeof(tempBuffer) / sizeof(char *);
-	tempBufferSize = nSamplesPerSec * BITS_PER_SAMPLE * CHANNLEL / 8 / 20;
+	tempBufferSize = nSamplesPerSec * BITS_PER_SAMPLE * CHANNLEL / 8 / 40;
 	for (int i = 0; i < size; i++)
 	{
 		tempBuffer[i] = (char *)malloc(tempBufferSize);
@@ -37,9 +35,9 @@ int RecordThread::getSamplesPerSec()
 
 int RecordThread::start()
 {
+	recovery();
 	cancel();
 	isRun = TRUE;
-	isCancel = FALSE;
 	waveform.wFormatTag = WAVE_FORMAT_PCM;//声音格式为PCM  
 	waveform.nSamplesPerSec = nSamplesPerSec;//采样率，16000次/秒  
 	waveform.wBitsPerSample = 16;//采样比特，16bits/次  
@@ -71,6 +69,7 @@ int RecordThread::start()
 void RecordThread::micCallBack2(HWAVEIN hwavein, UINT uMsg, DWORD dwInstance, DWORD dwParam1, DWORD dwParam2)
 {
 	DWORD threadId = 0;
+	LPWAVEHDR pHdr = (LPWAVEHDR)dwParam1;
 	RecordThread *pWnd = (RecordThread*)dwInstance;
 	switch (uMsg)
 	{
@@ -79,13 +78,12 @@ void RecordThread::micCallBack2(HWAVEIN hwavein, UINT uMsg, DWORD dwInstance, DW
 		OutputDebugStringEx("WIM_OPEN %d\n", threadId);
 		break;
 	case WIM_DATA:
-		if (!isCancel)
+		if (isRun)
 		{
 			OutputDebugStringEx("WIM_DATA\n", threadId);
-			LPWAVEHDR pHdr = (LPWAVEHDR)dwParam1;
 			{
 				std::lock_guard<std::mutex> lock(mut);
-				OutputDebugStringEx("WIM_DATA %d %d\n", isCancel, pHdr->dwBytesRecorded);
+				OutputDebugStringEx("WIM_DATA %d\n", pHdr->dwBytesRecorded);
 				int tempSize = pHdr->dwBytesRecorded;
 				OutputDebugStringEx("WIM_DATA2\n");
 				memmove(recordBuffer + size, pHdr->lpData, pHdr->dwBytesRecorded);
@@ -102,7 +100,6 @@ void RecordThread::micCallBack2(HWAVEIN hwavein, UINT uMsg, DWORD dwInstance, DW
 	case WIM_CLOSE:
 		threadId = GetCurrentThreadId();
 		OutputDebugStringEx("WIM_CLOSE %d\n", threadId);
-		recovery();
 		if (this->callBack)
 		{
 			this->callBack(this->pCall);
@@ -127,21 +124,32 @@ int RecordThread::read(char * pData, int readSize)
 	retryCount = 0;
 	while (true)
 	{
-		this->readSize = readSize;
 		if (size >= readSize)
 		{
-			std::lock_guard<std::mutex> lock(mut);
-			memmove(pData, recordBuffer, readSize);
-			if (size - readSize > 0)
 			{
-				memmove(recordBuffer, recordBuffer + readSize, size - readSize);
+				std::lock_guard<std::mutex> lock(mut);
+				memmove(pData, recordBuffer, readSize);
+				if (size - readSize > 0)
+				{
+					memmove(recordBuffer, recordBuffer + readSize, size - readSize);
+				}
+				size -= readSize;
 			}
-			size -= readSize;
+			break;
+		}
+		else if (!isRun)
+		{
+			{
+				std::lock_guard<std::mutex> lock(mut);
+				readSize = size;
+				memmove(pData, recordBuffer, size);
+				size = 0;
+			}
 			break;
 		}
 		else
 		{
-			if (isRun && retryCount < MAX_RETRY_COUNT)
+			if (retryCount < MAX_RETRY_COUNT)
 			{
 				retryCount++;
 				OutputDebugStringEx("retryCount %d\n", retryCount);
@@ -158,10 +166,10 @@ int RecordThread::read(char * pData, int readSize)
 
 void RecordThread::cancel()
 {
-	OutputDebugStringEx("cancel %d\n", isRun);
+	OutputDebugStringEx("record cancel %d\n", isRun);
 	if (isRun)
 	{
-		isCancel = TRUE;
+		isRun = FALSE;
 		OutputDebugStringEx("waveInStop\n");
 		waveInStop(hWaveIn);
 		OutputDebugStringEx("waveInReset\n");
@@ -177,9 +185,7 @@ void RecordThread::recovery()
 	OutputDebugStringEx("recovery %d\n", isRun);
 	size = 0;
 	isRun = FALSE;
-	isCancel = TRUE;
-	recordBufferSize = 1024 * 1000;
-	readSize = recordBufferSize / 2;
+
 }
 
 void RecordThread::addWaveHeader(char * filePath, int samplesPerSec)

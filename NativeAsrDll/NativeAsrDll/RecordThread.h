@@ -41,16 +41,14 @@ private:
 	void * pCall;
 	int nSamplesPerSec;
 	volatile int isRun;
-	volatile int isCancel;
 	HWAVEIN hWaveIn;  //输入设备  
 	WAVEFORMATEX waveform; //采集音频的格式，结构体   
 	WAVEHDR wHdr[8]; //采集音频时包含数据缓存的结构体
 	char * recordBuffer;
-	char * tempBuffer[8];
+	char * tempBuffer[16];
 	int recordBufferSize;
 	int tempBufferSize;
 	int size;
-	volatile int readSize;
 	void recovery();
 public:
 	RecordThread();
